@@ -1,8 +1,8 @@
 # action.yml
 apiVersion: automation.cloudbees.io/v1alpha1
 kind: action
-name: 'platform-action-gke-login'
-description: 'login to a gke cluster through gcp accounts'
+name: 'platform-action-gke-deployment'
+description: 'deploying an application on GKE Cluster'
 inputs:
   service-account:  # gcp service account
     description: 'service account'
@@ -28,13 +28,17 @@ runs:
       name: Prepare env
       with:
         bucket-name: pyang-test-s3
-        file-path: ${{ inputs.key-file }}
+        file-path: ./test.json
         s3-path: testCNP/test.json
     - id: login
       name: "login using service account and key file" 
       uses: docker://poseidon1979/gcloud-kubectl-image:latest
       run: |
-        gcloud auth activate-service-account ${{ inputs.service-account }} --key-file=${{ inputs.key-file }} --project=${{ inputs.project }}; 
+        gcloud auth activate-service-account ${{ inputs.service-account }} --key-file=./test.json --project=${{ inputs.project }}; 
         gcloud container clusters get-credentials ${{ inputs.cluster-name }} --zone ${{ inputs.zone }} --project ${{ inputs.project }}; 
-
+    - id: deploy
+      uses: docker://poseidon1979/gcloud-kubectl-image:latest
+      name: deploy
+      run: |
+        kubectl apply -f ./simple_java_app/myapp.yaml
 

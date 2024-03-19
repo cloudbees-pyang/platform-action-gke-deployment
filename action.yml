@@ -7,17 +7,8 @@ inputs:
   service-account:  # gcp service account
     description: 'service account'
     required: true
-  key-file: # key file used for login
-    description: 'key file for the service account'
-    required: true
-  project: 
-    description: 'the name of the gcp project'
-    required: true
-  cluster-name: 
-    description: 'the name of the gke cluster'
-    required: true
-  zone: 
-    description: 'the zone of the gke cluster'
+  yaml-file: # key file used for login
+    description: 'yaml file for deployment'
     required: true
 
 runs:
@@ -34,11 +25,11 @@ runs:
       name: "login using service account and key file" 
       uses: docker://poseidon1979/gcloud-kubectl-image:latest
       run: |
-        gcloud auth activate-service-account ${{ inputs.service-account }} --key-file=./test.json --project=${{ inputs.project }}; 
-        gcloud container clusters get-credentials ${{ inputs.cluster-name }} --zone ${{ inputs.zone }} --project ${{ inputs.project }}; 
+        gcloud auth activate-service-account ${{ inputs.service-account }} --key-file=./test.json --project=${{ vars.PYANG_GCP_PROJECT }}; 
+        gcloud container clusters get-credentials ${{ vars.DEV_CLUSTER_NAME }} --zone ${{ vars.DEV_CLUSTER_NAME }} --project ${{ vars.PYANG_GCP_PROJECT }}; 
     - id: deploy
       uses: docker://poseidon1979/gcloud-kubectl-image:latest
       name: deploy
       run: |
-        kubectl apply -f ./simple_java_app/myapp.yaml
+        kubectl apply -f ${{ inputs.service-account }}
 

@@ -10,12 +10,15 @@ inputs:
   project: 
     description: 'the name of the gcp project'
     required: true
+    default: 'cloudbees-sa-emea-demo'
   cluster-name: 
     description: 'the name of the gke cluster'
     required: true
+    default: 'deployment-cluster-1'
   zone: 
     description: 'the zone of the gke cluster'
     required: true
+    default: 'europe-west1-d'
   yaml-file: # key file used for login
     description: 'yaml file for deployment'
     required: true
